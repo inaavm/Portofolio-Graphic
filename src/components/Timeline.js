@@ -1,50 +1,47 @@
+import { useEffect, useRef, useState } from "react";
 
-import { useEffect, useRef, useState } from "react"
- 
-
-export default function TimelineItem({ item, index, scrollPosition, onImageClick }) {
-  
-  const [isVisible, setIsVisible] = useState(false)
-  const itemRef = useRef(null)
+export default function Timeline({ item, index, scrollPosition, onImageClick }) {
+  const [isVisible, setIsVisible] = useState(false);
+  const itemRef = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setIsVisible(true)
+            setIsVisible(true);
           } else {
             // Only hide if we've scrolled back up past this item
             if (entry.boundingClientRect.top > 0) {
-              setIsVisible(false)
+              setIsVisible(false);
             }
           }
-        })
+        });
       },
       {
         threshold: 0.2, // 20% of the item must be visible
         rootMargin: "-10% 0px", // Trigger a bit before the item enters the viewport
-      },
-    )
+      }
+    );
 
     if (itemRef.current) {
-      observer.observe(itemRef.current)
+      observer.observe(itemRef.current);
     }
 
     return () => {
       if (itemRef.current) {
-        observer.unobserve(itemRef.current)
+        observer.unobserve(itemRef.current);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   // Calculate parallax effect based on scroll position
-  const translateX = isVisible ? 0 : index % 2 === 0 ? -100 : 100
-  const opacity = isVisible ? 1 : 0
+  const translateX = isVisible ? 0 : index % 2 === 0 ? -100 : 100;
+  const opacity = isVisible ? 1 : 0;
 
   // Calculate a progress value for this item (0-1)
   // This creates a staggered effect where items appear at different scroll positions
-  const itemProgress = Math.max(0, Math.min(1, (scrollPosition - index * 5) / 20))
+  const itemProgress = Math.max(0, Math.min(1, (scrollPosition - index * 5) / 20));
 
   return (
     <div
@@ -84,10 +81,8 @@ export default function TimelineItem({ item, index, scrollPosition, onImageClick
             <img
               src={item.src || "/placeholder.svg"}
               alt={item.alt}
-              fill
-              className="object-cover"
+              className="object-cover w-full h-full"
               sizes="(max-width: 768px) 100vw, 50vw"
-              priority={index < 2}
             />
             <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-colors flex items-center justify-center">
               <div className="bg-black/60 text-white px-4 py-2 rounded-full text-sm opacity-0 hover:opacity-100 transition-opacity">
@@ -111,6 +106,5 @@ export default function TimelineItem({ item, index, scrollPosition, onImageClick
         </div>
       </div>
     </div>
-  )
+  );
 }
-
